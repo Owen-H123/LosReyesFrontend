@@ -5,14 +5,14 @@ import { ShoppingCart } from 'lucide-react'
 import { formatCurrency } from '@lib/utils'
 
 export function OrderSummary({
-  subtotal, tax, total, globalDiscount, onDiscountChange,
+  subtotal, tax, total, globalDiscount, discountPercent,
   notes, onNotesChange, onConfirm, canConfirm, isPending,
 }: {
   subtotal: number
   tax: number
   total: number
   globalDiscount: number
-  onDiscountChange: (value: number) => void
+  discountPercent: number
   notes: string
   onNotesChange: (value: string) => void
   onConfirm: () => void
@@ -27,12 +27,9 @@ export function OrderSummary({
           <span>Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-[var(--text-muted)]">Descuento Global</span>
-          <input type="number" min="0" value={globalDiscount || ''}
-            onChange={e => onDiscountChange(Number(e.target.value))}
-            placeholder="0.00"
-            className="w-24 px-2 py-1 bg-[var(--bg-base)] border border-[var(--border)] rounded text-right text-[var(--text-primary)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent)]" />
+        <div className="flex justify-between text-[var(--text-muted)]">
+          <span>Descuento Global ({discountPercent}%)</span>
+          <span>{globalDiscount > 0 ? `- ${formatCurrency(globalDiscount)}` : formatCurrency(0)}</span>
         </div>
         <div className="flex justify-between text-[var(--text-muted)]">
           <span>IGV (18%) incluido</span>

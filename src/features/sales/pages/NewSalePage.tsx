@@ -15,6 +15,9 @@ import { NewCustomerModal } from '@features/sales/components/NewCustomerModal'
 import { PaymentMethodPicker } from '@features/sales/components/PaymentMethodPicker'
 import { OrderSummary } from '@features/sales/components/OrderSummary'
 
+// Porcentaje del descuento global automático. Cámbialo aquí para ajustarlo.
+const GLOBAL_DISCOUNT_PERCENT = 5
+
 export default function NewSalePage() {
   const navigate     = useNavigate()
   const createSale   = useCreateSale()
@@ -22,7 +25,6 @@ export default function NewSalePage() {
   const [selectedCustomer, setCustomer]     = useState<Customer | null>(null)
   const [cart, setCart]                     = useState<CartItem[]>([])
   const [paymentMethod, setPaymentMethod]   = useState<PaymentMethod>('CASH')
-  const [globalDiscount, setGlobalDiscount] = useState(0)
   const [notes, setNotes]                   = useState('')
   // null = modal cerrado; string = abierto con ese nombre precargado
   const [newCustomerName, setNewCustomerName] = useState<string | null>(null)
@@ -56,6 +58,8 @@ export default function NewSalePage() {
   // IGV y el IGV se desglosa del total (no se suma). Es una vista previa: el
   // total oficial lo calcula el backend con la misma fórmula.
   const subtotal = cart.reduce((s, i) => s + (i.product.salePrice * i.quantity - i.discount), 0)
+  // Descuento global automático: porcentaje fijo sobre el subtotal.
+  const globalDiscount = Math.round(subtotal * GLOBAL_DISCOUNT_PERCENT) / 100
   const total    = Math.max(subtotal - globalDiscount, 0)
   const tax      = includedIgv(total)
 
@@ -105,7 +109,7 @@ export default function NewSalePage() {
             tax={tax}
             total={total}
             globalDiscount={globalDiscount}
-            onDiscountChange={setGlobalDiscount}
+            discountPercent={GLOBAL_DISCOUNT_PERCENT}
             notes={notes}
             onNotesChange={setNotes}
             onConfirm={handleSubmit}
